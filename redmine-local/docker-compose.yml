@@ -1,0 +1,32 @@
+version: '2'
+services:
+  redmine_db:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root-password #rootユーザ用のパスワード
+      MYSQL_USER: redmine                #作業ユーザ名
+      MYSQL_PASSWORD: redmine-password   #作業ユーザ用のパスワード
+      MYSQL_DATABASE: redmine            #作成するDB名
+      TZ: "Asia/Tokyo"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db:/var/lib/mysql
+#    restart: always
+  redmine:
+    build:
+      context: ./redmine
+      dockerfile: Dockerfile
+    environment:
+      REDMINE_DB_MYSQL: redminelocal_redmine_db_1 # [PROJECT_NAME]_[SERVICE_NAME]_[SEQ]
+      MYSQL_PORT_3306_TCP_PORT: 3306
+      MYSQL_ENV_MYSQL_USER: root
+      MYSQL_ENV_MYSQL_PASSWORD: root-password
+      MYSQL_ENV_MYSQL_DATABASE: redmine
+    ports:
+      - 8080:3000
+    depends_on:
+      - redmine_db
+#   restart: always

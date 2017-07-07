@@ -1,0 +1,27 @@
+#!/usr/bin/expect
+
+log_file ./expect.log
+
+spawn bundle exec rake redmine:backlogs:install RAILS_ENV="production"
+expect {
+    -regexp ".*Is this correct*" {
+        send "y\n"
+    }
+    -regexp ".*Separate values with a space.*" {
+        send "1\n"
+        exp_continue
+    }
+    -regexp ".*Choose one from above (or choose none to create a new tracker)*" {
+        send "1\n"
+        exp_continue
+    }
+    -regexp ".*Press any key to continue.*" {
+        send "1\n"
+        exp_continue
+    }
+    -regexp ".*Please type the tracker's name.*" {
+        send "story\n"
+        exp_continue
+    }
+}
+exit 0
